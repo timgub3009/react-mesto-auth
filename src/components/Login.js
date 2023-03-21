@@ -17,9 +17,9 @@ function Login(props) {
 
   return (
     <section className="login">
-      <h2 className="login__title"></h2>
+      <h2 className="login__title">Вход</h2>
       <form className="login__form" onSubmit={handleSubmit}>
-        <label htmlFor="login" className="login__label">
+        <label htmlFor="email" className="login__label">
           <input
             className="login__input login__input_type_email"
             type="email"
@@ -34,7 +34,7 @@ function Login(props) {
           />
           <span
             id="email-error"
-            className={`popup__error ${errors.email && "popup__error_active"}`}
+            className={`login__error ${errors.email && "login__error_active"}`}
           >
             {errors.email || ""}
           </span>
@@ -54,8 +54,8 @@ function Login(props) {
           />
           <span
             id="password-error"
-            className={`popup__error ${
-              errors.password && "popup__error_active"
+            className={`login__error ${
+              errors.password && "login__error_active"
             }`}
           >
             {errors.password || ""}

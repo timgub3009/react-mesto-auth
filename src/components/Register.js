@@ -12,13 +12,13 @@ function Register(props) {
 
   function handleSubmit(evt) {
     evt.preventDefault(evt);
-    const { email, password } = values;
-    props.onRegister(email, password);
+    const {password, email} = values;
+    props.onRegister(password, email);
   }
 
   return (
     <section className="login">
-      <h2 className="login__title"></h2>
+      <h2 className="login__title">Регистрация</h2>
       <form className="login__form" onSubmit={handleSubmit}>
         <label htmlFor="login" className="login__label">
           <input
@@ -67,7 +67,7 @@ function Register(props) {
         </button>
       </form>
       <p className="login__signup">
-        Уже зарегистрированы?
+        Уже зарегистрированы?&nbsp;
         <NavLink to="/sign-in" className="login__link">
           Войти
         </NavLink>

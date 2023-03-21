@@ -47,8 +47,8 @@ function App() {
       });
   }, []);
 
-  function handleAuthorization(items) {
-    auth.authorize(items).then((token) => {
+  function handleAuthorization(email, password) {
+    auth.authorize(email, password).then((token) => {
       auth.getContent(token).then((res) => {
         setEmail(res.items.email);
         setLoggedIn(true);
@@ -57,11 +57,12 @@ function App() {
     });
   }
 
-  function handleRegistration(items) {
-    auth.register(items).then((res) => {
-      isInfoTooltipOpen();
-      navigate("/sign-in", { replace: true });
-    });
+  function handleRegistration(password, email) {
+    auth.register(password, email)
+    .then((response) => {
+      setIsInfoTooltipOpen(true);
+      navigate("/sign-in", { replace: true });}
+  );
   }
 
   useEffect(() => {
@@ -75,7 +76,7 @@ function App() {
         }
       });
     }
-  }, [setLoggedIn]);
+  }, [setLoggedIn, navigate]);
 
   function handleAddPlaceSubmit(items) {
     setIsLoading(true);

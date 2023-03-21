@@ -1,21 +1,29 @@
 export const BASE_URL = 'https://api.nomoreparties.co';
 
-export const register = (email, password) => {
+function checkStatus(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
+export function register(password, email) {
   return fetch(`${BASE_URL}/signup`, {
     method: 'POST',
     headers: {
+      'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({email, password})
+    body: JSON.stringify({password, email})
   })
-  .then((res) => {
-    return res.json();
+  .then((response) => {
+    return response.json();
   })
   .then((res) => {
     return res;
   })
-  .catch((err) => console.log(err));
-};
+.then(checkStatus);
+}
 
 export const authorize = (email, password) => {
     return fetch(`${BASE_URL}/signin`, {
