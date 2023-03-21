@@ -1,17 +1,19 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import useFormValidation from "../hooks/useFormValidation";
 
 function Register(props) {
-  const { values, handleChange, setValues } = useFormValidation({});
+  const { values, handleChange, errors, resetValidation, isValid } =
+    useFormValidation({});
 
   React.useEffect(() => {
-    setValues(values);
-  }, [setValues]);
+    resetValidation();
+  }, [resetValidation]);
 
   function handleSubmit(evt) {
     evt.preventDefault(evt);
-
-    props.onRegister(values);
+    const { email, password } = values;
+    props.onRegister(email, password);
   }
 
   return (
@@ -22,13 +24,21 @@ function Register(props) {
           <input
             className="login__input login__input_type_email"
             type="email"
-            name="login"
-            id="login"
+            name="email"
+            id="email"
             placeholder="Email"
             value={values.email || ""}
             onChange={handleChange}
+            minLength="2"
+            maxLength="30"
             required
           />
+          <span
+            id="email-error"
+            className={`popup__error ${errors.email && "popup__error_active"}`}
+          >
+            {errors.email || ""}
+          </span>
         </label>
         <label htmlFor="password" className="login__label">
           <input
@@ -39,16 +49,28 @@ function Register(props) {
             placeholder="Пароль"
             value={values.password || ""}
             onChange={handleChange}
+            minLength="7"
+            maxLength="14"
             required
           />
+          <span
+            id="password-error"
+            className={`popup__error ${
+              errors.password && "popup__error_active"
+            }`}
+          >
+            {errors.password || ""}
+          </span>
         </label>
-        <button type="submit" className="login__button">
+        <button type="submit" className="login__button" disabled={!isValid}>
           Зарегистрироваться
         </button>
       </form>
       <p className="login__signup">
         Уже зарегистрированы?
-        <a className="login__link">Войти</a>
+        <NavLink to="/sign-in" className="login__link">
+          Войти
+        </NavLink>
       </p>
     </section>
   );
