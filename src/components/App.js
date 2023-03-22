@@ -34,6 +34,7 @@ function App() {
   const [loggedIn, setLoggedIn] = React.useState();
   const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
+  const [success, setSuccess] = React.useState(false);
 
   useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -47,36 +48,52 @@ function App() {
       });
   }, []);
 
-  function handleAuthorization(email, password) {
-    auth.authorize(email, password).then((token) => {
-      auth.getContent(token).then((res) => {
-        setEmail(res.items.email);
+  function handleAuthorization(password, email) {
+    auth.authorize(password, email)
+    .then((res) => {
+      if (res.token) {
+        setEmail(res.email);
+        localStorage.setItem('jwt', res.token)
         setLoggedIn(true);
         navigate("/", { replace: true });
-      });
-    });
+      }
+    })
   }
 
   function handleRegistration(password, email) {
-    auth.register(password, email)
-    .then((response) => {
-      setIsInfoTooltipOpen(true);
-      navigate("/sign-in", { replace: true });}
-  );
+    auth
+      .register(password, email)
+      .then(() => {
+        handleSuccessfulRegistration();
+        handleInfoTooltipClick();
+        navigate("/sign-in", { replace: true });
+      })
+      .catch((err) => {
+        handleFailedRegistration();
+        handleInfoTooltipClick();
+        console.log(err);
+      });
   }
 
   useEffect(() => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
       auth.getContent(jwt).then((res) => {
-        if (res) {
+        if (res.email) {
           setLoggedIn(true);
-          setEmail(res.email);
           navigate("/", { replace: true });
         }
       });
     }
   }, [setLoggedIn, navigate]);
+
+  function handleSuccessfulRegistration() {
+    setSuccess(true);
+  }
+
+  function handleFailedRegistration() {
+    setSuccess(false);
+  }
 
   function handleAddPlaceSubmit(items) {
     setIsLoading(true);
@@ -283,7 +300,11 @@ function App() {
           />
         </Routes>
 
-        <InfoTooltip isOpen={isInfoTooltipOpen} onClose={closeAllPopups} />
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          onClose={closeAllPopups}
+          isSignedUp={success}
+        />
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}

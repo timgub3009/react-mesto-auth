@@ -12,7 +12,7 @@ function Login(props) {
   function handleSubmit(evt) {
     evt.preventDefault(evt);
     const { password, email } = values;
-    props.onLogin(email, password);
+    props.onLogin(password, email);
   }
 
   return (
