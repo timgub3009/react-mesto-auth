@@ -7,9 +7,14 @@ function Header(props) {
       <img className="header__logo" src={logo} alt="Логотип сайта" />
       <nav className="header__nav">
         <p className="header__login">{props.email}</p>
-        <NavLink to={props.link} className="header__link">
+        {props.loggedIn ? <button className='header__button' onClick={props.signOut}>
           {props.title}
-        </NavLink>
+        </button>
+        :
+        <NavLink to={props.link} className='header__link'>
+        {props.title}
+      </NavLink>
+        }
       </nav>
     </header>
   );

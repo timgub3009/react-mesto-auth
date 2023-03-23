@@ -77,3 +77,6 @@ body {
 @import url(./blocks/header/__link/header__link.css);
 @import url(./blocks/popup/__sign/popup__sign.css);
 @import url(./blocks/popup/__status/popup__status.css);
+@import url(./blocks/header/__login/header__login.css);
+@import url(./blocks/header/__link/_faded/header__link_faded.css);
+@import url(./blocks/header/__button/header__button.css);

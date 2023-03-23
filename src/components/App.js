@@ -4,12 +4,12 @@ import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from "../utils/api";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AppPlacePopup";
 import PopupWithConfirmation from "./PopupWithConfirmation";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Login from "./Login";
 import Register from "./Register";
@@ -31,7 +31,7 @@ function App() {
   const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false);
   const [isImageLoading, setIsImageLoading] = React.useState(true);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
-  const [loggedIn, setLoggedIn] = React.useState();
+  const [loggedIn, setLoggedIn] = React.useState(false);
   const navigate = useNavigate();
   const [email, setEmail] = React.useState("");
   const [success, setSuccess] = React.useState(false);
@@ -48,25 +48,30 @@ function App() {
       });
   }, []);
 
-  function handleAuthorization(password, email) {
-    auth.authorize(password, email)
-    .then((res) => {
-      if (res.token) {
-        setEmail(res.email);
-        localStorage.setItem('jwt', res.token)
-        setLoggedIn(true);
-        navigate("/", { replace: true });
-      }
-    })
+  function handleAuthenticate(data) {
+    localStorage.setItem("jwt", data.jwt);
+    setLoggedIn(true);
+    setEmail(data.email);
   }
 
-  function handleRegistration(password, email) {
-    auth
-      .register(password, email)
+  function handleLogin(email, password) {
+    auth.authorize(email, password).then((data) => {
+      if (data.token) {
+        handleAuthenticate(data);
+        navigate("/", { replace: true });
+      }
+    });
+  }
+
+  function handleRegistration(email, password) {
+    const data = auth
+      .register(email, password)
       .then(() => {
         handleSuccessfulRegistration();
         handleInfoTooltipClick();
+        handleAuthenticate(data);
         navigate("/sign-in", { replace: true });
+        return data;
       })
       .catch((err) => {
         handleFailedRegistration();
@@ -75,17 +80,35 @@ function App() {
       });
   }
 
-  useEffect(() => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth.getContent(jwt).then((res) => {
-        if (res.email) {
+  const checkToken = useCallback(() => {
+    const token = localStorage.getItem("jwt");
+    auth
+      .getContent(token)
+      .then((res) => {
+        if (res) {
           setLoggedIn(true);
-          navigate("/", { replace: true });
+          setEmail(res.data.email);
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
+  }, []);
+
+  useEffect(() => {
+    checkToken();
+  }, [checkToken]);
+
+  useEffect(() => {
+    if (loggedIn === true) {
+      navigate("/");
     }
-  }, [setLoggedIn, navigate]);
+  }, [loggedIn, navigate]);
+
+  const signOut = useCallback(() => {
+    setLoggedIn(false);
+    localStorage.removeItem("jwt");
+  }, []);
 
   function handleSuccessfulRegistration() {
     setSuccess(true);
@@ -263,7 +286,7 @@ function App() {
             element={
               <>
                 <Header title="Регистрация" link="/sign-up" />
-                <Login onLogin={handleAuthorization} />
+                <Login onLogin={handleLogin} loggedIn={loggedIn} />
               </>
             }
           />
@@ -281,10 +304,15 @@ function App() {
             path="/"
             element={
               <>
-                <Navigate to={loggedIn ? "/" : "/sign-in"} />
-                <Header title="Выйти" email={email} />
+                <Header
+                  title="Выйти"
+                  email={email}
+                  loggedIn={loggedIn}
+                  signOut={signOut}
+                />
                 <ProtectedRoute
                   component={Main}
+                  loggedIn={loggedIn}
                   onEditProfile={handleEditProfileClick}
                   onAddPlace={handleAddPlaceClick}
                   onEditAvatar={handleEditAvatarClick}
