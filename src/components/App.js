@@ -48,37 +48,46 @@ function App() {
       });
   }, []);
 
-  function handleAuthenticate(data) {
-    localStorage.setItem("jwt", data.jwt);
-    setLoggedIn(true);
-    setEmail(data.email);
-  }
+  const handleLogin = useCallback(
+    (email, password) => {
+      auth
+        .authorize(email, password)
+        .then((data) => {
+          if (data.token) {
+            localStorage.setItem("jwt", data.token);
+            setLoggedIn(true);
+            setEmail(email);
+            navigate("/sign-in", { replace: true });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    [navigate]
+  );
 
-  function handleLogin(email, password) {
-    auth.authorize(email, password).then((data) => {
-      if (data.token) {
-        handleAuthenticate(data);
-        navigate("/", { replace: true });
-      }
-    });
-  }
-
-  function handleRegistration(email, password) {
-    const data = auth
-      .register(email, password)
-      .then(() => {
-        handleSuccessfulRegistration();
-        handleInfoTooltipClick();
-        handleAuthenticate(data);
-        navigate("/sign-in", { replace: true });
-        return data;
-      })
-      .catch((err) => {
-        handleFailedRegistration();
-        handleInfoTooltipClick();
-        console.log(err);
-      });
-  }
+  const handleRegistration = useCallback(
+    (email, password) => {
+      auth
+        .register(email, password)
+        .then((res) => {
+          handleSuccessfulRegistration();
+          handleInfoTooltipClick();
+          localStorage.setItem("jwt", res.jwt);
+          setLoggedIn(true);
+          setEmail(email);
+          navigate("/", { replace: true });
+          return res;
+        })
+        .catch((err) => {
+          handleFailedRegistration();
+          handleInfoTooltipClick();
+          console.log(err);
+        });
+    },
+    [navigate]
+  );
 
   const checkToken = useCallback(() => {
     const token = localStorage.getItem("jwt");
@@ -98,12 +107,6 @@ function App() {
   useEffect(() => {
     checkToken();
   }, [checkToken]);
-
-  useEffect(() => {
-    if (loggedIn === true) {
-      navigate("/");
-    }
-  }, [loggedIn, navigate]);
 
   const signOut = useCallback(() => {
     setLoggedIn(false);
@@ -308,7 +311,7 @@ function App() {
                   title="Выйти"
                   email={email}
                   loggedIn={loggedIn}
-                  signOut={signOut}
+                  onSignOut={signOut}
                 />
                 <ProtectedRoute
                   component={Main}
