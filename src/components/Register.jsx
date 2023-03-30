@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import useFormValidation from "../hooks/useFormValidation";
 
-function Register(props) {
+function Register({ onRegister }) {
   const { values, handleChange, errors, resetValidation, isValid } =
     useFormValidation({});
 
@@ -13,7 +13,7 @@ function Register(props) {
   function handleSubmit(evt) {
     evt.preventDefault(evt);
     const { email, password } = values;
-    props.onRegister(email, password);
+    onRegister(email, password);
   }
 
   return (

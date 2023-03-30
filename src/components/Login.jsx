@@ -1,8 +1,8 @@
 import React from "react";
 import useFormValidation from "../hooks/useFormValidation";
-import {Navigate} from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
-function Login(props) {
+function Login({ onLogin, loggedIn }) {
   const { values, handleChange, errors, resetValidation, isValid } =
     useFormValidation({});
 
@@ -13,12 +13,12 @@ function Login(props) {
   function handleSubmit(evt) {
     evt.preventDefault(evt);
     const { email, password } = values;
-    props.onLogin(email, password);
+    onLogin(email, password);
   }
 
-  if (props.loggedIn) {
-    return <Navigate to='/'/>;
-}
+  if (loggedIn) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <section className="login">

@@ -2,31 +2,29 @@ import React from "react";
 import PopupWithForm from "./PopupWithForm";
 import useFormValidation from "../hooks/useFormValidation";
 
-function AddPlacePopup(props) {
-  const { values, errors, handleChange, setValues, resetValidation, isValid } =
+function AddPlacePopup({ isOpen, onAddPlace, onClose, isLoading }) {
+  const { values, errors, handleChange, resetValidation, isValid } =
     useFormValidation({});
 
   React.useEffect(() => {
     resetValidation();
-    const values = {};
-    setValues(values);
-  }, [props.isOpen, setValues, resetValidation]);
+  }, [isOpen, resetValidation]);
 
   function handleSubmit(evt) {
     evt.preventDefault();
 
-    props.onAddPlace(values);
+    onAddPlace(values);
   }
 
   return (
     <PopupWithForm
-      isOpen={props.isOpen}
-      onClose={props.onClose}
+      isOpen={isOpen}
+      onClose={onClose}
       onSubmit={handleSubmit}
       name={"add"}
       formName={"card-form"}
       title={"Новое место"}
-      submitText={props.isLoading ? "Создание..." : "Создать"}
+      submitText={isLoading ? "Создание..." : "Создать"}
       isDisabled={!isValid}
     >
       <label htmlFor="title" className="popup__label">

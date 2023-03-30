@@ -73,7 +73,6 @@ function App() {
         .register(email, password)
         .then((res) => {
           handleSuccessfulRegistration();
-          handleInfoTooltipClick();
           localStorage.setItem("jwt", res.jwt);
           setLoggedIn(true);
           setEmail(email);
@@ -82,8 +81,10 @@ function App() {
         })
         .catch((err) => {
           handleFailedRegistration();
-          handleInfoTooltipClick();
           console.log(err);
+        })
+        .finally(() => {
+          handleInfoTooltipClick();
         });
     },
     [navigate]
@@ -212,42 +213,6 @@ function App() {
         setIsLoading(false);
       });
   }
-
-  const isOpen =
-    isEditAvatarPopupOpen ||
-    isEditProfilePopupOpen ||
-    isAddPlacePopupOpen ||
-    isImagePopupOpen ||
-    isDeleteCardPopupOpen ||
-    isInfoTooltipOpen;
-
-  useEffect(() => {
-    function closeByEscape(evt) {
-      if (evt.key === "Escape") {
-        closeAllPopups();
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("keydown", closeByEscape);
-      return () => {
-        document.removeEventListener("keydown", closeByEscape);
-      };
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    function closeByOverlayClick(evt) {
-      if (evt.target.classList.contains("popup_opened")) {
-        closeAllPopups();
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", closeByOverlayClick);
-      return () => {
-        document.removeEventListener("mousedown", closeByOverlayClick);
-      };
-    }
-  }, [isOpen]);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);

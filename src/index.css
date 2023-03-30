@@ -1,5 +1,5 @@
 body {
-    background-color: #000;
+  background-color: #000;
 }
 
 @import url(./vendor/normalize.css);
@@ -80,3 +80,4 @@ body {
 @import url(./blocks/header/__login/header__login.css);
 @import url(./blocks/header/__link/_faded/header__link_faded.css);
 @import url(./blocks/header/__button/header__button.css);
+@import url(./blocks/popup/__container/_type/popup__container_type_closeup.css);

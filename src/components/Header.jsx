@@ -1,19 +1,19 @@
 import { NavLink } from "react-router-dom";
 import logo from "../images/logo.png";
 
-function Header(props) {
+function Header({ email, loggedIn, onSignOut, title, link }) {
   return (
     <header className="header">
       <img className="header__logo" src={logo} alt="Логотип сайта" />
       <nav className="header__nav">
-        <p className="header__login">{props.email}</p>
-        {props.loggedIn ? (
-          <button className="header__button" onClick={props.onSignOut}>
-            {props.title}
+        <p className="header__login">{email}</p>
+        {loggedIn ? (
+          <button className="header__button" onClick={onSignOut}>
+            {title}
           </button>
         ) : (
-          <NavLink to={props.link} className="header__link">
-            {props.title}
+          <NavLink to={link} className="header__link">
+            {title}
           </NavLink>
         )}
       </nav>
